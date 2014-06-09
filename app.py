@@ -3,8 +3,10 @@ from flask.ext.sqlalchemy import SQLAlchemy
 import redis
 from collections import defaultdict
 import operator
+import os
 
 app = Flask(__name__)
+redis_url = os.getenv('REDISTOGO_URL', 'localhost')
 r_server = redis.Redis('localhost')
 
 @app.route('/')
