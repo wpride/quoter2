@@ -11,7 +11,7 @@ r_server = redis.Redis('localhost')
 
 @app.route('/')
 def hello():
-    return "Hello Derpy World!"
+    return "Hello Derpy Herpy World!"
 
 @app.route('/<name>')
 def hello_name(name):
