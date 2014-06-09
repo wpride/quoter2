@@ -11,4 +11,8 @@ alembic==0.6.5
 gunicorn==18.0
 itsdangerous==0.24
 psycopg2==2.5.3
+stevedore==0.15
+virtualenv==1.11.6
+virtualenv-clone==0.2.5
+virtualenvwrapper==4.3
 wsgiref==0.1.2
