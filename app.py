@@ -19,18 +19,14 @@ def hello_name(name):
     countmap=defaultdict(int)
 
     for splitsegment in splitstring:
-        mclips = r_server.sinter("tag:"+splitsegment)
+        mclips = r_server.sinter(splitsegment)
         accumulator += splitsegment
         for elem in mclips:
             countmap[elem] += 1
 
     result = max(countmap.iteritems(), key=lambda x: x[1])
 
-    clip_key = result[0]
-
-    clip_path = r_server.get("clip:"+clip_key)
-
-    return "<a href='https://www.youtube.com/watch?v={}'>Clip</a>".format(clip_path)
+    return "<a href='https://www.youtube.com/watch?v={}'>Clip</a>".format(result[0])
 
 if __name__ == '__main__':
 	app.run()
