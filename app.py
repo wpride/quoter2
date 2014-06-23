@@ -32,10 +32,13 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         flash('Login requested for tag= ' + form.tagid.data + ' clip= ' + form.clipid.data)
+
+        index = form.clipid.data.index("v=")+2
+        newClipId = form.clipid.data[index:]
         splitstring = form.tagid.data.replace(' ',',').split(',')
         for elem in splitstring:
             elem.strip()
-            r_server.sadd("tag:"+elem , form.clipid.data)
+            r_server.sadd("tag:"+elem , newClipId)
         return redirect('/')
     return render_template('login.html', title='Sign In', form=form)
 
