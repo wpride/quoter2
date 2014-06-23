@@ -1,10 +1,7 @@
-from flask import Flask, render_template, redirect
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask import Flask
 import redis
 from collections import defaultdict
-import operator
 import os
-from forms import TagForm
 
 app = Flask(__name__)
 app.debug = True
@@ -32,13 +29,6 @@ def hello_name(name):
         return "No matches found."
 
     return "<a href='https://www.youtube.com/watch?v={}'>Clip</a>".format(result[0])
-
-@app.route('/tag', methods = ['GET', 'POST'])
-def login():
-    form = TagForm()
-    return render_template('login.html',
-        title = 'Tag',
-        form = form)
 
 if __name__ == '__main__':
 	app.run()
