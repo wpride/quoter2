@@ -26,7 +26,7 @@ def login():
         return redirect('/')
     return render_template('login.html', title='Sign In', form=form)
 
-@app.route('/<name>')
+@app.route('/r/<name>')
 def hello_name(name):
 
     splitstring = name.split('_')
