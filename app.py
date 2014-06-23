@@ -11,8 +11,17 @@ redis_url = os.getenv('REDISTOGO_URL', 'localhost')
 r_server = redis.from_url(redis_url)
 
 @app.route('/')
-def hello():
-    return render_template('base.html')
+def hello2():
+
+    mclips = r_server.keys()
+
+    accumulator = ""
+
+    for elem in mclips:
+
+        accumulator = accumulator + "{" + elem + " } "
+
+    return accumulator
 
 @app.route('/index')
 def hello():
