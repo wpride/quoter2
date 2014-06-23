@@ -1,0 +1,1 @@
+http://stackoverflow.com/questions/9137500/how-to-wipe-heroku-redis

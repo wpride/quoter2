@@ -1,7 +1,8 @@
-from flask import Flask
+from flask import Flask, render_template, flash, redirect
 import redis
 from collections import defaultdict
 import os
+from forms import LoginForm
 
 app = Flask(__name__)
 app.debug = True
@@ -11,7 +12,7 @@ r_server = redis.from_url(redis_url)
 
 @app.route('/')
 def hello():
-    return "Hello Derpy Scurpy World!"
+    return render_template('base.html')
 
 @app.route('/<name>')
 def hello_name(name):
@@ -19,16 +20,32 @@ def hello_name(name):
     splitstring = name.split('_')
     countmap=defaultdict(int)
 
+    accumulator = ""
+
     for splitsegment in splitstring:
         mclips = r_server.sinter("tag:"+ splitsegment)
         for elem in mclips:
             countmap[elem] += 1
+            accumulator = accumulator + "<a href='https://www.youtube.com/watch?v={}'>Clip</a>".format(elem) + "<br/>"
     try:
         result = max(countmap.iteritems(), key=lambda x: x[1])
     except:
         return "No matches found."
 
-    return "<a href='https://www.youtube.com/watch?v={}'>Clip</a>".format(result[0])
+    #return "<a href='https://www.youtube.com/watch?v={}'>Clip</a>".format(result[0])
+    return accumulator
+
+@app.route('/tag', methods = ['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        flash('Login requested for tag= ' + form.tagid.data + ' clip= ' + form.clipid.data)
+        r_server.sadd("tag:"+form.tagid.data , form.clipid.data)
+        return redirect('/')
+    return render_template('login.html',
+        title = 'Sign In',
+        form = form)
 
 if __name__ == '__main__':
 	app.run()
+
