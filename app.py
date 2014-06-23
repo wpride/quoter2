@@ -32,7 +32,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         flash('Login requested for tag= ' + form.tagid.data + ' clip= ' + form.clipid.data)
-        splitstring = form.tagid.data.split(',')
+        splitstring = form.tagid.data.replace(' ',',').split(',')
         for elem in splitstring:
             elem.strip()
             r_server.sadd("tag:"+elem , form.clipid.data)
