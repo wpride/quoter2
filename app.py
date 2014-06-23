@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.debug = True
 app.config.from_object('config')
 redis_url = os.getenv('REDISTOGO_URL', 'localhost')
-r_server = redis.Redis('localhost')
+r_server = redis.from_url(redis_url)
 
 @app.route('/')
 def hello():
