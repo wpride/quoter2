@@ -14,6 +14,10 @@ r_server = redis.from_url(redis_url)
 def hello():
     return render_template('base.html')
 
+@app.route('/index')
+def hello():
+    return render_template('base.html')
+
 @app.route('/tag', methods = ['GET', 'POST'])
 def login():
     form = LoginForm()
