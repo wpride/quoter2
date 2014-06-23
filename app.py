@@ -34,7 +34,10 @@ def login():
         flash('Login requested for tag= ' + form.tagid.data + ' clip= ' + form.clipid.data)
 
         index = form.clipid.data.index("v=")+2
-        newClipId = form.clipid.data[index:]
+        if(index > 0):
+            newClipId = form.clipid.data[index:]
+        else:
+            newClipId = form.clipid.data
         splitstring = form.tagid.data.replace(' ',',').split(',')
         for elem in splitstring:
             elem.strip()
