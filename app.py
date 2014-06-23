@@ -21,11 +21,11 @@ def hello2():
 
         accumulator = accumulator + "{" + elem + " } "
 
-    return accumulator
+    return render_template('base.html') + accumulator
 
 @app.route('/index')
 def hello():
-    return render_template('base.html')
+    return render_template('base.html') + "Ned is Gay.com"
 
 @app.route('/tag', methods = ['GET', 'POST'])
 def login():

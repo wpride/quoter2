@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Submit Tag</h1>
+<form action="" method="post" name="tag">
+    {{form.hidden_tag()}}
+      <ul class=entries>
+  {% for entry in entries %}
+    <li><h2>{{ entry }}</h2>
+  {% else %}
+    <li><em>Unbelievable.  No entries here so far</em>
+  {% endfor %}
+  </ul>%}<br>
+    </p>
+    <p><input type="submit" value="Submit Tag"></p>
+</form>
+{% endblock %}
