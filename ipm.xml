@@ -1,0 +1,595 @@
+	<h:html xmlns:h="http://www.w3.org/1999/xhtml" xmlns:orx="http://openrosa.org/jr/xforms" xmlns="http://www.w3.org/2002/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jr="http://openrosa.org/javarosa">
+	  <h:head>
+		<h:title>senegal operateur form</h:title>
+		<model>
+		  <instance>
+			<data xmlns:jrm="http://dev.commcarehq.org/jr/xforms" xmlns="http://openrosa.org/formdesigner/7330597b92db84b1a33c7596bb7b1813502879be" uiVersion="1" version="1" name="Bon de commande-livraison Real">
+			<first_visit />
+				<PPS_name />
+				<district_name />
+				<region_name />
+
+			  <date_question />
+			  <new_date />
+			  <date_today/>
+			  <real_date />
+
+			  <total_amt_owed/>
+			  <disp_total_amt_owed/>
+			  <num_products />
+
+			  <location_id />
+
+			  <products index="" jr:template="">
+				<old_stock_total />
+				<old_stock_pps />
+				<default_consumption />
+				<disp_old_stock_total />
+				<disp_old_stock_pps />
+				<disp_ideal_stock />
+
+				<PPS_name />
+				<district_name />
+				<region_name />
+
+				<amt_delivered_convenience  />
+
+				<product_name />
+
+				<outside_receipts_amt>0</outside_receipts_amt>
+				<loss_amt >0</loss_amt>
+
+				<total_stock /> <!-- interim value to avoid (errant) circular ref error -->
+				<pps_stock /> <!-- interim value that can go negative -->
+				<billed_consumption />
+
+				<display_total_stock />
+
+				<ideal_stock />
+				<ideal_topup />
+				<dispensed_ideal />
+				<dispense_amt />
+				<actual_consumption />
+
+				<lot_number_1/>
+				<lot_number_2/>
+				<lot_number_3/>
+
+				<lot_exp_1/>
+				<lot_exp_2/>
+				<lot_exp_3/>
+
+				<date_question_repeat />
+				<new_date_repeat />
+				<date_today_repeat/>
+				<real_date_repeat />
+
+				<outside_receipts>
+				  <transfer xmlns="http://commcarehq.org/ledger/v1" dest="" type="other" date="">
+					<entry id="">
+					  <value section-id="stock" quantity=""/>
+					  <value section-id="stock-pps" quantity=""/>
+					</entry >
+				  </transfer>
+				</outside_receipts>
+				<losses>
+				  <transfer xmlns="http://commcarehq.org/ledger/v1" src="" type="loss" date="">
+					<entry id="">
+					  <value section-id="stock" quantity=""/>
+					  <value section-id="stock-pps" quantity=""/>
+					</entry >
+				  </transfer>
+				</losses>
+				<balance xmlns="http://commcarehq.org/ledger/v1" entity-id="" date="">
+				  <entry id="">
+					<value section-id="stock" quantity="" />
+					<value section-id="stock-pps" quantity="" />
+				  </entry>
+				</balance>
+				<top_up>
+				  <transfer xmlns="http://commcarehq.org/ledger/v1" dest="" date="">
+					<entry id="">
+					  <value section-id="stock" quantity=""/>
+					</entry >
+				  </transfer>
+				</top_up>
+
+				<price_per_unit />
+				<amount_owed />
+				<review>
+				  <disp_ideal_stock />
+				  <disp_pps_stock_old />
+				  <disp_total_stock_old />
+				  <disp_total_stock_new />
+				  <disp_pps_stock_new />
+				  <disp_billable_consumption />
+				  <disp_amount_owed />
+				  <disp_outside_receipts />
+				  <disp_losses />
+				  <disp_actual_consumption />
+				  <disp_dispensed />
+				  <disp_price_per_unit/>
+				  <disp_ideal_stock_2 />
+				</review>
+			  </products>
+
+			  <product_ix_1 />
+			</data>
+		  </instance>
+		  <instance id="commcaresession" src="jr://instance/session" />
+		  <instance id="products" src="jr://fixture/commtrack:products" />
+		  <instance id="ledger" src="jr://instance/ledgerdb" />
+		  <instance id="locations" src="jr://fixture/commtrack:locations" />
+		  <instance id="casedb" src="jr://instance/casedb"/>
+
+		  <bind nodeset="/data/num_products" calculate="count(instance('products')/products/product)" />
+		  <bind nodeset="/data/product_ix_1" calculate="count(/data/products)"/>
+		  <setvalue event="jr-insert" ref="/data/products/@index" value="int(/data/product_ix_1) + 1"/>
+
+		  <setvalue event="jr-insert" ref="/data/products/price_per_unit" value="instance('products')/products/product[position()=current()/../@index]/cost"/>
+
+		  <setvalue event="jr-insert" ref="/data/products/balance/@date" value="today()" />
+		  <setvalue event="jr-insert" ref="/data/products/balance/@entity-id" value="instance('commcaresession')/session/data/case_id" />
+
+		  <setvalue event="jr-insert" ref="/data/products/outside_receipts/transfer/@dest" value="instance('commcaresession')/session/data/case_id" />
+		  <setvalue event="jr-insert" ref="/data/products/outside_receipts/transfer/@date" value="today()" />
+		  <setvalue event="jr-insert" ref="/data/products/top_up/transfer/@dest" value="instance('commcaresession')/session/data/case_id" />
+		  <setvalue event="jr-insert" ref="/data/products/top_up/transfer/@date" value="today()" />
+		  <setvalue event="jr-insert" ref="/data/products/losses/transfer/@src" value="instance('commcaresession')/session/data/case_id" />
+		  <setvalue event="jr-insert" ref="/data/products/losses/transfer/@date" value="today()" />
+
+		  <setvalue event="jr-insert" ref="/data/products/balance/entry/@id" value="instance('products')/products/product[position()=current()/../../../@index]/@id" />
+		  <setvalue event="jr-insert" ref="/data/products/outside_receipts/transfer/entry/@id" value="instance('products')/products/product[position()=current()/../../../../@index]/@id" />
+		  <setvalue event="jr-insert" ref="/data/products/losses/transfer/entry/@id" value="instance('products')/products/product[position()=current()/../../../../@index]/@id" />
+		  <setvalue event="jr-insert" ref="/data/products/top_up/transfer/entry/@id" value="instance('products')/products/product[position()=current()/../../../../@index]/@id" />
+		  <setvalue event="jr-insert" ref="/data/products/top_up/transfer/entry/@id" value="instance('products')/products/product[position()=current()/../../../../@index]/@id" />
+		  <setvalue event="jr-insert" ref="/data/products/product_name" value = "instance('products')/products/product[position()=int(/data/product_ix_1) + 1]/name"/>
+
+		  <setvalue event="jr-insert" ref="/data/products/date_question_repeat" value = "/data/date_question"/>
+		  <setvalue event="jr-insert" ref="/data/products/new_date_repeat" value = "/data/new_date"/>
+		  <setvalue event="jr-insert" ref="/data/products/date_today_repeat" value = "/data/date_today"/>
+		  <setvalue event="jr-insert" ref="/data/products/real_date_repeat" value = "/data/real_date"/>
+
+		  <bind nodeset="/data/products/old_stock_total" calculate="coalesce(instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock']/entry[@id=instance('products')/products/product[position()=current()/../@index]/@id], 0)" />
+		  <bind nodeset="/data/products/old_stock_pps" calculate="coalesce(instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='stock-pps']/entry[@id=instance('products')/products/product[position()=current()/../@index]/@id], 0)" />
+		  <bind nodeset="/data/products/default_consumption" calculate="coalesce(instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='consumption']/entry[@id=instance('products')/products/product[position()=current()/../@index]/@id], 0)" />
+
+		  <!-- note: these binds duplicate the transfer for both the 'stock' and 'stock-pps' sections -->
+		  <bind nodeset="/data/products/outside_receipts/transfer/entry/value/@quantity" calculate="/data/products/outside_receipts_amt" />
+		  <bind nodeset="/data/products/losses/transfer/entry/value/@quantity" calculate="/data/products/loss_amt" />
+
+		  <bind nodeset="/data/products/pps_stock" calculate="../old_stock_pps + /data/products/total_stock - ../old_stock_total" />
+		  <bind nodeset="/data/products/billed_consumption" calculate="max(-../pps_stock, 0)" />
+		  <bind nodeset="/data/products/balance/entry/value[@section-id='stock']/@quantity" calculate="/data/products/total_stock" />
+		  <bind nodeset="/data/products/balance/entry/value[@section-id='stock-pps']/@quantity" calculate="max(/data/products/pps_stock, 0)" />
+
+		  <bind nodeset="/data/products/ideal_stock" calculate="int(3 * instance('ledger')/ledgerdb/ledger[@entity-id=instance('commcaresession')/session/data/case_id]/section[@section-id='consumption']/entry[@id=instance('products')/products/product[position()=current()/../@index]/@id] + .999)" />
+		  <bind nodeset="/data/products/ideal_topup" calculate="max(/data/products/ideal_stock - /data/products/balance/entry/value[@section-id='stock']/@quantity, 0)" type="int"/>
+		  <bind nodeset="/data/products/dispense_amt" required="true()" type="int" relevant="../dispensed_ideal = 'n'" />
+
+		  <setvalue event="xforms-ready" ref="/data/location_id" value="instance('casedb')/casedb/case[@case_id=instance('commcaresession')/session/data/case_id]/location_id"/>
+
+		  <setvalue event="xforms-ready" ref="/data/PPS_name" value="instance('locations')/regions/region/districts/district/ppss/pps[@id=/data/location_id]/name" />
+		  <setvalue event="xforms-ready" ref="/data/district_name" value= "instance('locations')/regions/region/districts/district[count(ppss/pps[@id=/data/location_id]) &gt; 0]/name"/>
+		  <setvalue event="xforms-ready" ref="/data/region_name" value= "instance('locations')/regions/region[count(districts/district/ppss/pps[@id=/data/location_id]) &gt; 0]/name"/>
+
+		  <bind nodeset="/data/products/PPS_name" calculate="/data/PPS_name" />
+		  <bind nodeset="/data/products/district_name" calculate= "/data/district_name"/>
+		  <bind nodeset="/data/products/region_name" calculate= "/data/region_name"/>
+
+		  <bind nodeset="/data/products/lot_number_1" type="string"/>
+		  <bind nodeset="/data/products/lot_number_2" type="string"/>
+		  <bind nodeset="/data/products/lot_number_3" type="string"/>
+
+		  <bind nodeset="/data/products/dispensed_ideal" required="true()"/>
+
+		  <bind nodeset="/data/products/lot_exp_1" type="date"/>
+		  <bind nodeset="/data/products/lot_exp_2" type="date"/>
+		  <bind nodeset="/data/products/lot_exp_3" type="date"/>
+
+		  <bind nodeset="/data/products/top_up/transfer/entry/value/@quantity" calculate="if(/data/products/dispensed_ideal = 'y', /data/products/ideal_topup, /data/products/dispense_amt)" />
+
+		  <bind nodeset="/data/products/amt_delivered_convenience" calculate="if(/data/products/dispensed_ideal = 'y', /data/products/ideal_topup, /data/products/dispense_amt)" />
+
+		  <bind nodeset="/data/products/actual_consumption" calculate="if(../old_stock_total - /data/products/balance/entry/value[@section-id='stock']/@quantity + /data/products/outside_receipts_amt - /data/products/loss_amt > 0, ../old_stock_total - /data/products/balance/entry/value[@section-id='stock']/@quantity + /data/products/outside_receipts_amt - /data/products/loss_amt, 0)"/>
+
+		  <bind nodeset="/data/products/amount_owed" calculate="/data/products/billed_consumption * /data/products/price_per_unit" />
+
+		  <bind nodeset="/data/products/total_stock" type="int" required="true()"/>
+		  <bind nodeset="/data/products/display_total_stock" type="int" calculate="/data/products/total_stock + if(/data/products/dispensed_ideal = 'y', /data/products/ideal_topup, /data/products/dispense_amt)"/>
+		  <bind nodeset="/data/products/outside_receipts_amt" type="int" constraint=". &gt;= /data/products/total_stock - /data/products/old_stock_total" jr:constraintMsg="jr:itext('received_stock_error')"/>
+		  <bind nodeset="/data/products/loss_amt" type="int" />
+		  <bind nodeset="/data/total_amt_owed" calculate="sum(current()/../products/amount_owed)"/>
+
+			<bind nodeset="/data/date_question" required="true()"/>
+			<bind nodeset="/data/new_date" type="xsd:date" relevant="/data/date_question = 'n'" required="true()" />
+			<bind nodeset="/data/date_today" calculate = "today()"/>
+			<bind nodeset="/data/real_date" calculate="if(/data/date_question = &quot;n&quot;, /data/date_today, /data/new_date)" />
+
+		  <itext>
+			<translation lang = 'fra' default="">
+
+											<text id="date_question-label">
+						<value>Est-ce que vous voulez soumettre des informations collectés aujourd'hui?</value>
+					</text>
+					<text id="date_question-y-label">
+						<value>Oui</value>
+					</text>
+					<text id="date_question-n-label">
+						<value>Non</value>
+					</text>
+					<text id="new_date-label">
+						<value>veuillez selectionner la date pour la quelle vous allez soumettre les information</value>
+					</text>
+
+				<text id = "disp_old_stock_total">
+				<value>Stock aprés la dernière livraison: &#10; <output value="/data/products/old_stock_total"/></value>
+				</text>
+
+				<text id = "received_stock_error">
+					<value>Si la quantité du stock disponible et utilisable a la livraison dépasse la quantité du stock après la dernière livraison, la quantité du stock reçue hors l’entrepôt mobile doit égal au moins la différence entre le stock actuel et antérieur.</value>
+				</text>
+
+				<text id = "disp_old_stock_pps">
+				<value>Stock appartenant au PPS aprés la dernière livraison: &#10; <output value="/data/products/old_stock_pps"/></value>
+				</text>
+
+				<text id = "total_stock">
+				<value>Stock disponible et utilisable à la livraison</value>
+				</text>
+
+				<text id = "outside_receipts_amt">
+				<value>Produit recu hors entrepôt mobile</value>
+				</text>
+
+				<text id = "loss_amt">
+				<value>Pertes et ajustements</value>
+				</text>
+
+				<text id = "disp_ideal_stock">
+				<value>Stock maximum: &#10; <output value="/data/products/ideal_stock"/> &#10; Nous devrions livrer &#10; <output value="/data/products/ideal_topup"/></value>
+				</text>
+
+				<text id = "dispense_ideal">
+				<value>Est-ce que nous avons mené cette quantité du produit?</value>
+				</text>
+
+				<text id = "yes">
+				<value>Oui</value>
+				</text>
+
+				<text id = "no">
+				<value>Non</value>
+				</text>
+
+				<text id = "dispense_amt">
+				<value>Livraison effective</value>
+				</text>
+
+				<text id = "lot_number">
+				<value>Numero de lot</value>
+				</text>
+
+				<text id = "lot_exp">
+				<value>Date de péremption du lot</value>
+				</text>
+
+				<text id = "disp_ideal_stock_2">
+				<value>Stock maximum: &#10; <output value="/data/products/ideal_stock"/></value>
+				</text>
+
+				<text id = "disp_total_stock_new">
+				<value>Stock disponible et utilisable à la livraison: &#10; <output value="/data/products/balance/entry/value[@section-id='stock']/@quantity"/></value>
+				</text>
+
+				<text id = "disp_pps_stock_new">
+				<value>Stock appartenant au PPS restant: &#10; <output value="/data/products/balance/entry/value[@section-id='stock-pps']/@quantity"/></value>
+				</text>
+
+				<text id = "disp_billable_consumption">
+				<value>Consommation facturable de la période: &#10; <output value="/data/products/billed_consumption"/></value>
+				</text>
+
+				<text id = "disp_price_per_unit">
+				<value>Prix unitaire du produit: &#10; <output value="/data/products/price_per_unit"/></value>
+				</text>
+
+				<text id = "disp_amount_owed">
+				<value>Recourvrements du district: &#10; <output value="/data/products/amount_owed"/></value>
+				</text>
+
+				<text id = "disp_outside_receipts">
+				<value>Produit recu hors entrepôt mobile &#10; <output value="/data/products/outside_receipts_amt"/></value>
+				</text>
+
+				<text id = "disp_losses">
+					<value>Pertes et ajustements &#10; <output value="/data/products/loss_amt"/></value>
+				</text>
+
+				<text id = "disp_actual_consumption">
+				<value>Consommation réelle du PPS: &#10; <output value="/data/products/actual_consumption"/></value>
+				</text>
+
+				<text id = "disp_dispensed">
+				<value>Livraison: &#10; <output value="if(/data/products/dispensed_ideal = 'y', /data/products/ideal_topup, /data/products/dispense_amt)"/></value>
+				</text>
+
+				<text id = "disp_total_amt_owed">
+				<value> Recouvrement du district total &#10; <output value="/data/total_amt_owed"/></value>
+				</text>
+
+			</translation>
+
+			<translation lang = 'en'>
+
+											<text id="date_question-label">
+						<value>Are you entering data for a visit that happens today?</value>
+					</text>
+					<text id="date_question-y-label">
+						<value>Yes</value>
+					</text>
+					<text id="date_question-n-label">
+						<value>No</value>
+					</text>
+					<text id="new_date-label">
+						<value>Please enter the date</value>
+					</text>
+
+				<text id = "disp_old_stock_total">
+				<value>Stock after the last delivery: &#10; <output value="/data/products/old_stock_total"/></value>
+				</text>
+
+				<text id = "received_stock_error">
+				<value>If the stock available at the time of delivery exceeds the stock after the previous delivery, then the stock recieved from elsewhere must at least make up the difference.</value>
+				</text>
+
+				<text id = "disp_old_stock_pps">
+				<value>Stock belonging to the clinic after the last delivery: &#10; <output value="/data/products/old_stock_pps"/></value>
+				</text>
+
+				<text id = "total_stock">
+				<value>Stock available at the time of delivery</value>
+				</text>
+
+				<text id = "outside_receipts_amt">
+				<value>Product received from other sources</value>
+				</text>
+
+				<text id = "loss_amt">
+				<value>Losses and adjustments</value>
+				</text>
+
+				<text id = "disp_ideal_stock">
+				<value>Ideal stock: &#10; <output value="/data/products/ideal_stock"/> &#10; You should deliver &#10; <output value="/data/products/ideal_topup"/></value>
+				</text>
+
+				<text id = "dispense_ideal">
+				<value>Did you deliver this quantity of the product?</value>
+				</text>
+
+				<text id = "yes">
+				<value>Yes</value>
+				</text>
+
+				<text id = "no">
+				<value>No</value>
+				</text>
+
+				<text id = "dispense_amt">
+				<value>Amount delivered</value>
+				</text>
+
+				<text id = "lot_number">
+				<value>Batch number</value>
+				</text>
+
+				<text id = "lot_exp">
+				<value>Batch expiration date</value>
+				</text>
+
+				<text id = "disp_ideal_stock_2">
+				<value>Ideal stock: &#10; <output value="/data/products/ideal_stock"/></value>
+				</text>
+
+				<text id = "disp_total_stock_new">
+				<value>Stock available at the time of delivery: &#10; <output value="/data/products/balance/entry/value[@section-id='stock']/@quantity"/></value>
+				</text>
+
+				<text id = "disp_pps_stock_new">
+				<value>Remaining stock belonging to the clinic: &#10; <output value="/data/products/balance/entry/value[@section-id='stock-pps']/@quantity"/></value>
+				</text>
+
+				<text id = "disp_billable_consumption">
+				<value>Billable consumption: &#10; <output value="/data/products/billed_consumption"/></value>
+				</text>
+
+				<text id = "disp_price_per_unit">
+				<value>Unit price of product: &#10; <output value="/data/products/price_per_unit"/></value>
+				</text>
+
+				<text id = "disp_amount_owed">
+				<value>Amount owed: &#10; <output value="/data/products/amount_owed"/></value>
+				</text>
+
+				<text id = "disp_outside_receipts">
+				<value>Product received from other sources: &#10; <output value="/data/products/outside_receipts_amt"/></value>
+				</text>
+
+				<text id = "disp_losses">
+				<value>Losses and adjustments: &#10; <output value="/data/products/loss_amt"/></value>
+				</text>
+
+				<text id = "disp_actual_consumption">
+				<value>Total consumption of clinic: &#10; <output value="/data/products/actual_consumption"/></value>
+				</text>
+
+				<text id = "disp_dispensed">
+				<value>Delivery: &#10; <output value="if(/data/products/dispensed_ideal = 'y', /data/products/ideal_topup, /data/products/dispense_amt)"/></value>
+				</text>
+
+				<text id = "disp_total_amt_owed">
+				<value> Total amount owed to district: &#10; <output value="/data/total_amt_owed"/></value>
+				</text>
+
+			</translation>
+
+
+		  </itext>
+
+		</model>
+	  </h:head>
+	  <h:body>
+
+		<select1 ref="/data/date_question">
+			<label ref="jr:itext('date_question-label')" />
+			<item>
+				<label ref="jr:itext('date_question-y-label')" />
+				<value>y</value>
+			</item>
+			<item>
+				<label ref="jr:itext('date_question-n-label')" />
+				<value>n</value>
+			</item>
+		</select1>
+		<input ref="/data/new_date">
+			<label ref="jr:itext('new_date-label')" />
+		</input>
+
+		<group>
+		<label><output value="instance('products')/products/product[position()=current()/@index]/name"/></label>
+		<repeat nodeset="/data/products" jr:count="/data/num_products">
+
+		  <group appearance="field-list">
+
+		  <jr:entryHeader><output value="$name"/></jr:entryHeader>
+
+		  <trigger ref="/data/products/disp_old_stock_total">
+			<label ref="jr:itext('disp_old_stock_total')" />
+		  </trigger>
+		  <trigger ref="/data/products/disp_old_stock_pps">
+			<label ref="jr:itext('disp_old_stock_pps')" />
+		  </trigger>
+
+		  <input ref="/data/products/total_stock">
+			<label ref="jr:itext('total_stock')" />
+		  </input>
+		  <input ref="/data/products/outside_receipts_amt">
+			<label ref="jr:itext('outside_receipts_amt')"/>
+		  </input>
+		  <input ref="/data/products/loss_amt">
+			<label ref="jr:itext('loss_amt')"/>
+		  </input>
+
+		  </group>
+
+		  <group appearance="field-list">
+
+		  <trigger ref="/data/products/disp_ideal_stock">
+			<label ref="jr:itext('disp_ideal_stock')"/>
+		  </trigger>
+
+		  <select1 ref="/data/products/dispensed_ideal">
+			<label ref="jr:itext('dispense_ideal')"/>
+			<item><label ref="jr:itext('yes')"/><value>y</value></item>
+			<item><label ref="jr:itext('no')"/><value>n</value></item>
+		  </select1>
+
+		  <input ref="/data/products/dispense_amt">
+			<label ref="jr:itext('dispense_amt')"/>
+		  </input>
+
+		  </group>
+
+		  <!-- add q: lot number/expiration date(s) -->
+
+		  <group appearance="field-list">
+			<input ref="/data/products/lot_number_1">
+			  <label ref="jr:itext('lot_number')"/>
+			</input>
+			<input ref="/data/products/lot_exp_1">
+			  <label ref="jr:itext('lot_exp')"/>
+			</input>
+			<input ref="/data/products/lot_number_2">
+			  <label ref="jr:itext('lot_number')"/>
+			</input>
+			<input ref="/data/products/lot_exp_2">
+			  <label ref="jr:itext('lot_exp')"/>
+			</input>
+			<input ref="/data/products/lot_number_3">
+			  <label ref="jr:itext('lot_number')"/>
+			</input>
+			<input ref="/data/products/lot_exp_3">
+			  <label ref="jr:itext('lot_exp')"/>
+			</input>
+		  </group>
+
+		</repeat>
+		</group>
+
+		<group>
+		<label><output value="instance('products')/products/product[position()=current()/@index]/name"/></label>
+		<repeat nodeset="/data/products" jr:noAddRemove="true">
+
+		  <group appearance="field-list">
+
+		  <jr:entryHeader><output value="$name"/></jr:entryHeader>
+
+		  <trigger ref="/data/products/review/disp_ideal_stock_2">
+			<label ref="jr:itext('disp_ideal_stock_2')"/>
+		  </trigger>
+
+		  <trigger ref="/data/products/review/disp_pps_stock_old">
+			<label ref="jr:itext('disp_old_stock_pps')"/>
+		  </trigger>
+
+		  <trigger ref="/data/products/review/disp_total_stock_old">
+			<label ref="jr:itext('disp_old_stock_total')" />
+		  </trigger>
+
+		  <trigger ref="/data/products/review/disp_total_stock_new">
+			<label ref="jr:itext('disp_total_stock_new')"/>
+		  </trigger>
+
+		  <trigger ref="/data/products/review/disp_pps_stock_new">
+			<label ref="jr:itext('disp_pps_stock_new')"/>
+		  </trigger>
+
+		  <trigger ref="/data/products/review/disp_billable_consumption">
+			<label ref="jr:itext('disp_billable_consumption')"/>
+		  </trigger>
+
+		  <trigger ref="/data/products/review/disp_price_per_unit">
+			<label ref="jr:itext('disp_price_per_unit')"/>
+		  </trigger>
+
+		  <trigger ref="/data/products/review/disp_amount_owed">
+			<label ref="jr:itext('disp_amount_owed')"/>
+		  </trigger>
+
+		  <trigger ref="/data/products/review/disp_outside_receipts">
+			<label ref="jr:itext('disp_outside_receipts')"/>
+		  </trigger>
+
+		  <trigger ref="/data/products/review/disp_losses">
+			<label ref="jr:itext('disp_losses')"/>
+		  </trigger>
+
+		  <trigger ref="/data/products/review/disp_actual_consumption">
+			<label ref="jr:itext('disp_actual_consumption')"/>
+		  </trigger>
+
+		  <trigger ref="/data/products/review/disp_dispensed">
+			<label ref="jr:itext('disp_dispensed')"/>
+		  </trigger>
+
+		  </group>
+
+		</repeat>
+		</group>
+
+		<trigger ref="/data/disp_total_amt_owed">
+			<label ref="jr:itext('disp_total_amt_owed')"/>
+		</trigger>
+
+	  </h:body>
+	</h:html>

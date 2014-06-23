@@ -40,7 +40,8 @@ def login():
             newClipId = form.clipid.data
         splitstring = form.tagid.data.replace(' ',',').split(',')
         for elem in splitstring:
-            elem.strip()
+            elem = elem.strip()
+            elem = elem.lower()
             r_server.sadd("tag:"+elem , newClipId)
         return redirect('/')
     return render_template('login.html', title='Sign In', form=form)
