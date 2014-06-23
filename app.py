@@ -14,6 +14,18 @@ r_server = redis.from_url(redis_url)
 def hello():
     return render_template('base.html')
 
+@app.route('/tag', methods = ['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        flash('Login requested for tag= ' + form.tagid.data + ' clip= ' + form.clipid.data)
+        splitstring = form.tagid.data.split(',')
+        for elem in splitstring:
+            elem.strip()
+            r_server.sadd("tag:"+elem , form.clipid.data)
+        return redirect('/')
+    return render_template('login.html', title='Sign In', form=form)
+
 @app.route('/<name>')
 def hello_name(name):
 
@@ -35,17 +47,5 @@ def hello_name(name):
     #return "<a href='https://www.youtube.com/watch?v={}'>Clip</a>".format(result[0])
     return accumulator
 
-@app.route('/tag', methods = ['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        flash('Login requested for tag= ' + form.tagid.data + ' clip= ' + form.clipid.data)
-        r_server.sadd("tag:"+form.tagid.data , form.clipid.data)
-        return redirect('/')
-    return render_template('login.html',
-        title = 'Sign In',
-        form = form)
-
 if __name__ == '__main__':
-	app.run()
-
+    app.run()
